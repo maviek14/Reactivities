@@ -1,17 +1,30 @@
-using System.Runtime.InteropServices;
+using Microsoft.AspNetCore.Mvc;
 
-// In SDK-style projects such as this one, several assembly attributes that were historically
-// defined in this file are now automatically added during build and populated with
-// values defined in project properties. For details of which attributes are included
-// and how to customise this process see: https://aka.ms/assembly-info-properties
+namespace API.Controllers;
 
+public class BuggyController : BaseApiController
+{
+    [HttpGet("not-found")]
+    public ActionResult GetNotFound()
+    {
+        return NotFound();
+    }
 
-// Setting ComVisible to false makes the types in this assembly not visible to COM
-// components.  If you need to access a type in this assembly from COM, set the ComVisible
-// attribute to true on that type.
+    [HttpGet("bad-request")]
+    public ActionResult GetBadRequest()
+    {
+        return BadRequest("This is a bad request");
+    }
 
-[assembly: ComVisible(false)]
+    [HttpGet("server-error")]
+    public ActionResult GetServerError()
+    {
+        throw new Exception("This is a server error");
+    }
 
-// The following GUID is for the ID of the typelib if this project is exposed to COM.
-
-[assembly: Guid("5585a06e-7977-4529-90d9-a5bc63c5f243")]
+    [HttpGet("unauthorised")]
+    public ActionResult GetUnauthorised()
+    {
+        return Unauthorized();
+    }
+}
