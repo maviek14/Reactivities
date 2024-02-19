@@ -1,7 +1,9 @@
 ﻿using Application.Core;
+using Application.Interfaces;
 using Domain;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Persistence;
 
 namespace Application.Activities;
@@ -23,18 +25,31 @@ public class Create
 
     public class Handler : IRequestHandler<Command, Result<Unit>>
     {
-        private readonly DataContext _context;
+        private readonly DataContext context;
+        private readonly IUserAccessor userAccessor;
 
-        public Handler(DataContext context)
+        public Handler(DataContext context, IUserAccessor userAccessor)
         {
-            _context = context;
+            this.context = context;
+            this.userAccessor = userAccessor;
         }
 
         public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
         {
-            _context.Activities.Add(request.Activity);
+            var user = await context.Users.FirstOrDefaultAsync(x => x.UserName == userAccessor.GetUsername());
 
-            var result = await _context.SaveChangesAsync() > 0;
+            var attendee = new ActivityAttendee
+            {
+                AppUser = user,
+                Activity = request.Activity,
+                IsHost = true
+            };
+
+            request.Activity.Attendees.Add(attendee);
+
+            context.Activities.Add(request.Activity);
+
+            var result = await context.SaveChangesAsync() > 0;
 
             if (!result) return Result<Unit>.Failure("Failed to create activity");
 
