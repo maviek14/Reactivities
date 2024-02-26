@@ -27,6 +27,7 @@ export default observer(function ProfileActivities() {
 
     const handleTabChange = (e: SyntheticEvent, data: TabProps) => {
         loadUserActivities(profile!.username, panes[data.activeIndex as number].pane.key);
+        console.log(e);
     };
 
     return (

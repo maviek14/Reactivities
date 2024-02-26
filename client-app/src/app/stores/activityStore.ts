@@ -37,6 +37,7 @@ export default class ActivityStore {
         const resetPredicate = () => {
             this.predicate.forEach((value, key) => {
                 if (key !== 'startDate') this.predicate.delete(key);
+                console.log(value);
             })
         }
         switch (predicate) {
@@ -55,6 +56,7 @@ export default class ActivityStore {
             case 'startDate':
                 this.predicate.delete('startDate');
                 this.predicate.set('startDate', value);
+                break;
         }
     }
 
